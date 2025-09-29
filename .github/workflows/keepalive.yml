@@ -1,0 +1,25 @@
+name: Keep GitHub Active
+
+on:
+  schedule:
+    - cron: '0 8 * * *'   # 每天 UTC 8:00 自动执行一次
+  workflow_dispatch:       # 手动触发
+
+jobs:
+  keep-active:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Update keepalive file
+        run: |
+          echo "Last update: $(date)" > keepalive.txt
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add keepalive.txt
+          git commit -m "auto update $(date)" || echo "No changes"
+          git push
